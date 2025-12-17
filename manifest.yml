@@ -14,7 +14,6 @@ modules:
     - key: export-key
       handler: macroExport.exportFunction
 
-
 resources:
   - key: main
     path: src/frontend/index.jsx
@@ -25,7 +24,7 @@ app:
     architecture: arm64
   id: ari:cloud:ecosystem::app/99e930e0-9ace-4e0e-a051-07e62859be5c
 
-
 permissions:
   scopes:
     - read:comment:confluence
+    - read:confluence-user
