@@ -9,19 +9,6 @@ import ForgeReconciler, {
 import { requestConfluence } from "@forge/bridge";
 
 /**
- * Fetches footer comments for a given Confluence page.
- * @param {string} pageId - The ID of the Confluence page.
- * @returns {Promise<Array>} - Resolves to an array of comment objects.
- */
-const fetchCommentsForPage = async (pageId) => {
-  const res = await requestConfluence(
-    `/wiki/api/v2/pages/${pageId}/footer-comments`,
-  );
-  const data = await res.json();
-  return data.results;
-};
-
-/**
  * Fetches the currently logged in Confluence user.
  * Returns an object or throws when the response is not ok.
  */
@@ -48,9 +35,9 @@ const fetchCurrentUser = async () => {
 };
 
 const App = () => {
-  const context = useProductContext();
+  // State of the checkbox set by the user
   const [checked, setChecked] = React.useState(false);
-  const [comments, setComments] = React.useState();
+  // User's name to set as approver in next column
   const [currentUserName, setCurrentUserName] = React.useState("");
   const [userLoading, setUserLoading] = React.useState(true);
   const [userError, setUserError] = React.useState(null);
@@ -59,17 +46,6 @@ const App = () => {
   const [approvers, setApprovers] = React.useState(() =>
     releases.map(() => ""),
   );
-
-  console.log(`Number of comments on this page: ${comments?.length}`);
-
-  React.useEffect(() => {
-    if (context) {
-      const pageId = context.extension.content.id;
-      fetchCommentsForPage(pageId)
-        .then(setComments)
-        .catch((err) => console.error("fetchCommentsForPage error", err));
-    }
-  }, [context]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -85,7 +61,7 @@ const App = () => {
             user?.username ||
             user?.accountId ||
             "";
-          console.log("Fetched current user:", name);
+          // console.log("Fetched current user:", name);
           setCurrentUserName(name);
           setUserLoading(false);
         }
@@ -101,7 +77,7 @@ const App = () => {
       cancelled = true;
     };
   }, []);
-
+  // we determine the user name to set as approver in next column
   const handleToggle = (index, checked) => {
     setApprovers((prev) => {
       const next = [...prev];
@@ -109,35 +85,26 @@ const App = () => {
       return next;
     });
   };
-  console.log("User: ", currentUserName);
+  const VERSION = "2.18.0";
   // Determine greeting text
   let greeting;
   if (userLoading)
     greeting = "Hello ..."; // loading indicator
   else if (userError)
     greeting = `Hello (error fetching user)`; // visible error
-  else if (currentUserName) greeting = `Hello ${currentUserName}!`;
+  else if (currentUserName) greeting = `Hello ${currentUserName},`;
   else greeting = "Hello woooorld!"; // fallback
 
   return (
     <>
-      <Text>Number of comments on this page: {comments?.length}</Text>
-
-      <Text>{greeting}</Text>
-
+      <Text>
+        {greeting} Macro version is {VERSION}
+      </Text>
       <Checkbox
         label="Release"
         isChecked={checked}
         onChange={(e) => setChecked(e.target.checked)}
       />
-
-      {/* If there was an error, show a small hint with details in console */}
-      {userError && (
-        <Text>
-          (See console/network for details — status: {userError.status || "?"})
-        </Text>
-      )}
-      {currentUserName && <Text>(Logged in as {currentUserName})</Text>}
     </>
   );
 };
