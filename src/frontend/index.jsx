@@ -89,7 +89,7 @@ const App = (props) => {
             user?.username ||
             user?.accountId ||
             "";
-          console.log("Fetched current user:", name);
+          // console.log("Fetched current user:", name);
           setCurrentUserName(name);
           setUserLoading(false);
         }
@@ -123,7 +123,7 @@ const App = (props) => {
       setSaving(false);
     }
   };
-  console.log("handleToggle called above: ", value.target?.checked);
+  console.log("handleToggle called above");
   // Determine greeting text
   let greeting;
   if (userLoading)
@@ -155,8 +155,4 @@ const App = (props) => {
   );
 };
 
-ForgeReconciler.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+ForgeReconciler.render(<App />);

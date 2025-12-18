@@ -19,15 +19,21 @@ const handler = async (event) => {
 };
 
 const saveCheckbox = async (event, payload) => {
-  console.log("SAVE CALLED", payload);
-  const { rowId: rawRowId, checked } = payload || {};
-  const rowId = rawRowId || "test-row-1";
+  // ← payload, NOT destructured
+  console.log("=== SAVE CHECKBOX CALLED ===");
+  console.log("PAYLOAD:", JSON.stringify(payload));
+
+  const { rowId, checked } = payload || {};
+  const rowIdFinal = rowId || "test-row-1";
   const pageId = event.context?.extension?.content?.id || "unknown-page";
-  // Ensure we save a boolean
+
+  const storageKey = `checkbox-${pageId}-${rowIdFinal}`;
   const checkedValue = !!checked;
-  console.log(`Saving checkbox-${pageId}-${rowId} = ${checkedValue}`);
-  await storage.set(`checkbox-${pageId}-${rowId}`, checkedValue);
-  console.log("Save complete");
+
+  console.log(`Saving ${storageKey} = ${checkedValue}`);
+  await storage.set(storageKey, checkedValue);
+  console.log("=== SAVE COMPLETED ===");
+
   return { checked: checkedValue };
 };
 
