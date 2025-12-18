@@ -48,7 +48,13 @@ const fetchCurrentUser = async () => {
 };
 
 const App = (props) => {
-  const { rowId, release, checked: initialChecked } = props;
+  const {
+    rowId: rawRowId,
+    release = "Test Release",
+    checked: initialChecked,
+  } = props;
+  // Single, definitive rowId used everywhere in this component:
+  const rowId = rawRowId || "test-row-1";
   const context = useProductContext();
   const [checked, setChecked] = useState(initialChecked ?? false);
   const [saving, setSaving] = useState(false);
@@ -59,8 +65,6 @@ const App = (props) => {
 
   const releases = ["Release 1.0", "Release 1.1", "Release 2.0"];
   const [approvers, setApprovers] = useState(() => releases.map(() => ""));
-
-  console.log(`Number of comments on this page: ${comments?.length}`);
 
   useEffect(() => {
     if (context) {
@@ -103,15 +107,23 @@ const App = (props) => {
   }, []);
 
   const handleToggle = async (value) => {
-    setChecked(value);
+    const checkedValue = value.target?.checked ?? value;
+    console.log("Saving:", { rowId, checked: checkedValue });
+    setChecked(checkedValue);
     setSaving(true);
     try {
-      await invoke("save-checkbox", { rowId, checked: value });
+      console.log("Saving checkbox state:", checkedValue);
+      console.log("rowId is:", rowId);
+      const result = await invoke("save-checkbox", {
+        rowId,
+        checked: checkedValue,
+      });
+      console.log("INVOKE RESULT:", result); // Browser console
     } finally {
       setSaving(false);
     }
   };
-  console.log("User: ", currentUserName);
+  console.log("handleToggle called above: ", value.target?.checked);
   // Determine greeting text
   let greeting;
   if (userLoading)
@@ -123,7 +135,7 @@ const App = (props) => {
 
   return (
     <>
-      <Text>Number of comments on this page: {comments?.length}</Text>
+      <Text>Row ID: {String(rowId)}</Text>
 
       <Text>{greeting}</Text>
       <Checkbox
@@ -131,11 +143,6 @@ const App = (props) => {
         isChecked={checked}
         onChange={handleToggle}
       />
-      {/* <Checkbox
-        label="Release"
-        isChecked={checked}
-        onChange={(e) => setChecked(e.target.checked)}
-      />*/}
 
       {/* If there was an error, show a small hint with details in console */}
       {userError && (
