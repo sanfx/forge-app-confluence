@@ -6,6 +6,7 @@ import ForgeReconciler, {
   useState,
   useEffect,
 } from "@forge/react";
+import { invoke } from "@forge/bridge";
 // Import the bridge method to call Confluence REST APIs
 import { requestConfluence } from "@forge/bridge";
 
@@ -48,9 +49,11 @@ const fetchCurrentUser = async () => {
   return res.json();
 };
 
-const App = () => {
+const App = (props) => {
+  const { rowId, release, checked: initialChecked } = props;
   const context = useProductContext();
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(initialChecked ?? false);
+  const [saving, setSaving] = useState(false);
   const [comments, setComments] = useState();
   const [currentUserName, setCurrentUserName] = useState("");
   const [userLoading, setUserLoading] = useState(true);
@@ -101,12 +104,14 @@ const App = () => {
     };
   }, []);
 
-  const handleToggle = (index, checked) => {
-    setApprovers((prev) => {
-      const next = [...prev];
-      next[index] = checked ? currentUserName : "";
-      return next;
-    });
+  const handleToggle = async (value) => {
+    setChecked(value);
+    setSaving(true);
+    try {
+      await invoke("save-checkbox", { rowId, checked: value });
+    } finally {
+      setSaving(false);
+    }
   };
   console.log("User: ", currentUserName);
   // Determine greeting text
@@ -123,12 +128,16 @@ const App = () => {
       <Text>Number of comments on this page: {comments?.length}</Text>
 
       <Text>{greeting}</Text>
-
       <Checkbox
+        label={saving ? "Saving..." : "Approve"}
+        isChecked={checked}
+        onChange={handleToggle}
+      />
+      {/* <Checkbox
         label="Release"
         isChecked={checked}
         onChange={(e) => setChecked(e.target.checked)}
-      />
+      />*/}
 
       {/* If there was an error, show a small hint with details in console */}
       {userError && (

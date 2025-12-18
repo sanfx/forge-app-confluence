@@ -6,13 +6,11 @@ modules:
       resolver:
         function: resolver
       title: Forge app for san
-      adfExport:
-        function: export-key
   function:
     - key: resolver
-      handler: index.handler
-    - key: export-key
-      handler: macroExport.exportFunction
+      handler: resolvers/index.handler
+    - key: save-checkbox
+      handler: resolvers/index.saveCheckbox
 
 resources:
   - key: main
@@ -26,5 +24,6 @@ app:
 
 permissions:
   scopes:
+    - storage:app
     - read:comment:confluence
     - read:confluence-user
