@@ -1,9 +1,10 @@
 // Import React and Forge UI Kit components/hooks
-import React from "react";
 import ForgeReconciler, {
   Text,
   Checkbox,
   useProductContext,
+  useState,
+  useEffect,
 } from "@forge/react";
 // Import the bridge method to call Confluence REST APIs
 import { requestConfluence } from "@forge/bridge";
@@ -49,20 +50,18 @@ const fetchCurrentUser = async () => {
 
 const App = () => {
   const context = useProductContext();
-  const [checked, setChecked] = React.useState(false);
-  const [comments, setComments] = React.useState();
-  const [currentUserName, setCurrentUserName] = React.useState("");
-  const [userLoading, setUserLoading] = React.useState(true);
-  const [userError, setUserError] = React.useState(null);
+  const [checked, setChecked] = useState(false);
+  const [comments, setComments] = useState();
+  const [currentUserName, setCurrentUserName] = useState("");
+  const [userLoading, setUserLoading] = useState(true);
+  const [userError, setUserError] = useState(null);
 
   const releases = ["Release 1.0", "Release 1.1", "Release 2.0"];
-  const [approvers, setApprovers] = React.useState(() =>
-    releases.map(() => ""),
-  );
+  const [approvers, setApprovers] = useState(() => releases.map(() => ""));
 
   console.log(`Number of comments on this page: ${comments?.length}`);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (context) {
       const pageId = context.extension.content.id;
       fetchCommentsForPage(pageId)
@@ -71,7 +70,7 @@ const App = () => {
     }
   }, [context]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let cancelled = false;
     setUserLoading(true);
     setUserError(null);
