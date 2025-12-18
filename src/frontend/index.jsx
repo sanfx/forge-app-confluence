@@ -1,10 +1,8 @@
-// Import React and Forge UI Kit components/hooks
+import React, { useState, useEffect } from "react";
 import ForgeReconciler, {
   Text,
   Checkbox,
   useProductContext,
-  useState,
-  useEffect,
 } from "@forge/react";
 import { invoke } from "@forge/bridge";
 // Import the bridge method to call Confluence REST APIs
