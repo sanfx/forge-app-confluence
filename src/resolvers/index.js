@@ -1,13 +1,26 @@
 const { storage } = require("@forge/api");
 
 const handler = async (event) => {
-  console.log("Handler was called.");
-  const savePayload = event.call?.payload;
-  const { rowId = "test-row-1", checked: saveChecked } =
-    savePayload || event.parameters || {};
+  console.log("Handler called with event:", JSON.stringify(event, null, 2));
+
+  // const savePayload = event.call?.payload;
+  // const { rowId = "test-row-1", checked: saveChecked } =
+  //   savePayload || event.parameters || {};
+
+  const functionKey = event.call?.functionKey || event.functionKey;
+  const payload = event.call?.payload;
+  const parameters = event.parameters || {};
+
+  // Merge payload and parameters
+  const { rowId = "test-row-1", checked: saveChecked } = {
+    ...parameters,
+    ...payload,
+  };
+
   const pageId = event.context?.extension?.content?.id || "unknown-page";
   const key = `checkbox-${pageId}-${rowId}`;
   console.log("savedChecked is: ", saveChecked);
+
   if (saveChecked !== undefined) {
     const checkedValue = !!saveChecked;
     await storage.set(key, checkedValue);

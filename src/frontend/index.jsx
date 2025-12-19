@@ -57,24 +57,29 @@ const App = (props) => {
   const rowId = rawRowId || "test-row-1";
   console.log("PROPS from resolver:", { rowId, initialChecked }); // Debug
   const context = useProductContext();
-  const [checked, setChecked] = useState(initialChecked);
+  const [checked, setChecked] = useState(false); // Start with false
   const [saving, setSaving] = useState(false);
-  const [comments, setComments] = useState();
+
   const [currentUserName, setCurrentUserName] = useState("");
   const [userLoading, setUserLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Add loading Initial state
   const [userError, setUserError] = useState(null);
 
-  const releases = ["Release 1.0", "Release 1.1", "Release 2.0"];
-  const [approvers, setApprovers] = useState(() => releases.map(() => ""));
-
+  // Load initial checkbox state from resolver
   useEffect(() => {
-    if (context) {
-      const pageId = context.extension.content.id;
-      fetchCommentsForPage(pageId)
-        .then(setComments)
-        .catch((err) => console.error("fetchCommentsForPage error", err));
-    }
-  }, [context]);
+    const loadInitialState = async () => {
+      try {
+        const result = await invoke("resolver", { rowId });
+        console.log("Initial state loaded:", result);
+        setChecked(result.checked);
+      } catch (err) {
+        console.error("Failed to load initial state:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadInitialState();
+  }, [rowId]);
 
   useEffect(() => {
     let cancelled = false;
