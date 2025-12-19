@@ -55,8 +55,9 @@ const App = (props) => {
   } = props;
   // Single, definitive rowId used everywhere in this component:
   const rowId = rawRowId || "test-row-1";
+  console.log("PROPS from resolver:", { rowId, initialChecked }); // Debug
   const context = useProductContext();
-  const [checked, setChecked] = useState(initialChecked ?? false);
+  const [checked, setChecked] = useState(initialChecked);
   const [saving, setSaving] = useState(false);
   const [comments, setComments] = useState();
   const [currentUserName, setCurrentUserName] = useState("");
