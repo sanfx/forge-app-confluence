@@ -3,14 +3,11 @@ const { storage } = require("@forge/api");
 const handler = async (event) => {
   console.log("Handler called with event:", JSON.stringify(event, null, 2));
 
-  // const savePayload = event.call?.payload;
-  // const { rowId = "test-row-1", checked: saveChecked } =
-  //   savePayload || event.parameters || {};
-
   const functionKey = event.call?.functionKey || event.functionKey;
   const payload = event.call?.payload;
   const parameters = event.parameters || {};
-
+  console.log("payload", payload);
+  // console.log("functionKey", functionKey);
   // Merge payload and parameters
   const { rowId = "test-row-1", checked: saveChecked } = {
     ...parameters,

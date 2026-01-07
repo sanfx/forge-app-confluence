@@ -70,7 +70,7 @@ const App = (props) => {
     const loadInitialState = async () => {
       try {
         const result = await invoke("resolver", { rowId });
-        console.log("Initial state loaded:", result);
+        // console.log("Initial state loaded:", result);
         setChecked(result.checked);
       } catch (err) {
         console.error("Failed to load initial state:", err);
@@ -120,16 +120,18 @@ const App = (props) => {
     try {
       console.log("Saving checkbox state:", checkedValue);
       console.log("rowId is:", rowId);
-      const result = await invoke("save-checkbox", {
+
+      const result = await invoke("resolver", {
         rowId,
         checked: checkedValue,
       });
+
       console.log("INVOKE RESULT:", result); // Browser console
     } finally {
       setSaving(false);
     }
   };
-  console.log("handleToggle called above");
+  // console.log("handleToggle called above");
   // Determine greeting text
   let greeting;
   if (userLoading)
@@ -145,7 +147,7 @@ const App = (props) => {
 
       <Text>{greeting}</Text>
       <Checkbox
-        label={saving ? "Saving..." : "Approve"}
+        label={saving ? "Saving..." : checked ? "Approved" : "Approve"}
         isChecked={checked}
         onChange={handleToggle}
       />

@@ -9,8 +9,6 @@ modules:
   function:
     - key: resolver
       handler: resolvers/index.handler
-    - key: save-checkbox
-      handler: resolvers/index.handler
 
 resources:
   - key: main
